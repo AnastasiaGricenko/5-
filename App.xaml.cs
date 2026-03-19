@@ -10,4 +10,3 @@ namespace ДНД_Мастер;
 public partial class App : Application
 {
 }
-
