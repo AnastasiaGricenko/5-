@@ -1,0 +1,19 @@
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\bin\Debug\net10.0-windows\ДНД Мастер.exe
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\bin\Debug\net10.0-windows\ДНД Мастер.deps.json
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\bin\Debug\net10.0-windows\ДНД Мастер.runtimeconfig.json
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\bin\Debug\net10.0-windows\ДНД Мастер.dll
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\bin\Debug\net10.0-windows\ДНД Мастер.pdb
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\MainWindow.g.cs
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\App.g.cs
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер_MarkupCompile.cache
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\MainWindow.baml
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.g.resources
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.AssemblyInfoInputs.cache
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.AssemblyInfo.cs
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.csproj.CoreCompileInputs.cache
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.dll
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\refint\ДНД Мастер.dll
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.pdb
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ДНД Мастер.genruntimeconfig.cache
+C:\Users\agamt\OneDrive\Desktop\ДНД Мастер\obj\Debug\net10.0-windows\ref\ДНД Мастер.dll
