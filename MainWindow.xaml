@@ -1,0 +1,60 @@
+﻿<Window x:Class="DndAssistant.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Помощник Ведущего (DnD)" Height="600" Width="450" Background="#F0F0F0">
+    
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <RowDefinition Height="*"/>    </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Дневник Мастера" FontSize="24" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,10"/>
+            
+            <TextBlock Text="Поиск героя по имени:" FontSize="12" Foreground="Gray"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     Padding="5" Margin="0,5,0,10"/>
+
+            <UniformGrid Columns="2">
+                <Button Content="Создать героя" Click="GenerateBtn_Click" 
+                        Margin="0,0,5,0" Height="35" Background="#3498DB" Foreground="White" FontWeight="Bold"/>
+                <Button Content="Сохранить всё" Click="SaveBtn_Click" 
+                        Margin="5,0,0,0" Height="35" Background="#2ECC71" Foreground="White" FontWeight="Bold"/>
+            </UniformGrid>
+        </StackPanel>
+
+        <ListBox Grid.Row="1" ItemsSource="{Binding FilteredCharacters}" 
+                 Background="Transparent" BorderThickness="0" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="White" CornerRadius="8" Margin="0,0,0,10" Padding="15">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="5" ShadowDepth="1" Opacity="0.2"/>
+                        </Border.Effect>
+                        
+                        <StackPanel>
+                            <TextBlock Text="{Binding ChName}" FontSize="18" FontWeight="Bold" Foreground="#E67E22"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <TextBlock Text="Раса: " FontWeight="Bold"/>
+                                <TextBox Text="{Binding ChRace, Mode=TwoWay}" BorderThickness="0" Background="Transparent"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                <TextBlock Text="Локация: " FontWeight="Bold"/>
+                                <TextBox Text="{Binding ChLocation, Mode=TwoWay}" BorderThickness="0" Background="Transparent" Foreground="#2980B9"/>
+                            </StackPanel>
+
+                            <TextBlock Text="Описание:" FontWeight="Bold" Margin="0,5,0,2"/>
+                            <TextBox Text="{Binding ChDescription, Mode=TwoWay}" TextWrapping="Wrap" AcceptsReturn="True"
+                                     Background="#F9F9F9" BorderThickness="1" BorderBrush="#EEEEEE" Padding="5"/>
+
+                            <TextBlock Text="Инвентарь:" FontWeight="Bold" Margin="0,10,0,2"/>
+                            <TextBox Text="{Binding ChInventory, Mode=TwoWay}" Foreground="#27AE60" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</Window>
