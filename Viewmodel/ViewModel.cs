@@ -108,10 +108,10 @@ namespace DndAssistant
         {
             if (obj is not Character c) return false;
 
-            bool matchesSearch = string.IsNullOrWhiteSpace(SearchText) || 
-                                 (c.Name?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
-            
-            bool matchesLocation = SelectedLocation == "Все" || c.Location == SelectedLocation;
+            bool matchesSearch = string.IsNullOrWhiteSpace(SearchText) ||
+                                 (c.ChName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
+
+            bool matchesLocation = SelectedLocation == "Все" || c.ChLocation == SelectedLocation;
 
             return matchesSearch && matchesLocation;
         }
@@ -141,4 +141,29 @@ namespace DndAssistant
             FileService.Save(AllCharacters);
         }
     }
-}
+}                                                  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//нукарочевоттакиепироги
