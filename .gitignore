@@ -1,0 +1,14 @@
+# Игнорировать всё
+*
+
+# Разрешить файлы Model
+!/Model/
+!/Model/Character.cs
+
+# Разрешить Viewmodel
+!/Viewmodel/
+!/Viewmodel/ViewModel.cs
+
+# Разрешить .gitignore
+!.gitignore
+!5историй.txt
