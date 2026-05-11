@@ -4,9 +4,14 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using DndAssistant.Model;
+using DndAssistant.Model.Items;
+using DndAssistant.Services;
+using Microsoft.Win32;
 
 namespace DndAssistant
 {
@@ -33,24 +38,30 @@ namespace DndAssistant
 
     public static class FileService
     {
-        private const string FilePath = "characters.json"; 
+        private const string DefaultFilePath = "gamesessions.json"; 
 
-        public static void Save(IEnumerable<Character> characters)
+        public static void Save(GameSession session, string? filePath = null)
         {
+            var path = filePath ?? DefaultFilePath;
             var options = new JsonSerializerOptions { WriteIndented = true };
-            string json = JsonSerializer.Serialize(characters, options);
-            File.WriteAllText(FilePath, json);
+            string json = JsonSerializer.Serialize(session, options);
+            File.WriteAllText(path, json);
         }
 
-        public static IEnumerable<Character> Load()
+        public static GameSession Load(string? filePath = null)
         {
-            if (!File.Exists(FilePath)) return new List<Character>();
-            string json = File.ReadAllText(FilePath);
-            return JsonSerializer.Deserialize<List<Character>>(json) ?? new List<Character>();
+            var path = filePath ?? DefaultFilePath;
+            if (!File.Exists(path)) return new GameSession();
+            string json = File.ReadAllText(path);
+            var options = new JsonSerializerOptions();
+            return JsonSerializer.Deserialize<GameSession>(json, options) ?? new GameSession();
         }
     }
     public class GMViewModel : DependencyObject
     {
+        private readonly NameGenerator _nameGenerator = new NameGenerator();
+        private GameSession _currentSession = new GameSession();
+
         public ObservableCollection<Character> AllCharacters { get; set; } = new ObservableCollection<Character>();
         
         public ICollectionView FilteredCharacters { get; private set; }
@@ -58,6 +69,12 @@ namespace DndAssistant
         public ICommand SaveCommand { get; }
         public ICommand LoadCommand { get; }
         public ICommand GenerateNameCommand { get; }
+        public ICommand AddWeaponCommand { get; }
+        public ICommand AddArmorCommand { get; }
+        public ICommand AddArtifactCommand { get; }
+        public ICommand AddTrinketCommand { get; }
+        public ICommand EditItemCommand { get; }
+        public ICommand RemoveCharacterCommand { get; }
 
         public string SearchText
         {
@@ -102,6 +119,12 @@ namespace DndAssistant
             SaveCommand = new RelayCommand(_ => SaveToFile());
             LoadCommand = new RelayCommand(_ => LoadFromFile());
             GenerateNameCommand = new RelayCommand(_ => GenerateRandomName());
+            AddWeaponCommand = new RelayCommand(param => AddWeapon(param as Character), param => param is Character);
+            AddArmorCommand = new RelayCommand(param => AddArmor(param as Character), param => param is Character);
+            AddArtifactCommand = new RelayCommand(param => AddArtifact(param as Character), param => param is Character);
+            AddTrinketCommand = new RelayCommand(param => AddTrinket(param as Character), param => param is Character);
+            EditItemCommand = new RelayCommand(param => EditItem(param as Item), param => param is Item);
+            RemoveCharacterCommand = new RelayCommand(param => RemoveCharacter(param as Character), param => param is Character);
         }
 
         private bool FilterCharacter(object obj)
@@ -111,34 +134,172 @@ namespace DndAssistant
             bool matchesSearch = string.IsNullOrWhiteSpace(SearchText) ||
                                  (c.ChName?.Contains(SearchText, StringComparison.OrdinalIgnoreCase) == true);
 
-            bool matchesLocation = SelectedLocation == "Все" || c.ChLocation == SelectedLocation;
+            bool matchesLocation = SelectedLocation == "Все" || c.Location.Name == SelectedLocation;
 
             return matchesSearch && matchesLocation;
         }
 
         public void LoadFromFile()
         {
-            var loadedCharacters = FileService.Load();
-            AllCharacters.Clear();
-            foreach (var character in loadedCharacters)
+            var openFileDialog = new OpenFileDialog
             {
-                AllCharacters.Add(character);
+                Title = "Выберите файл для загрузки",
+                Filter = "JSON файлы (*.json)|*.json|Все файлы (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                _currentSession = FileService.Load(openFileDialog.FileName);
+                AllCharacters.Clear();
+                if (_currentSession.Groups.Count > 0)
+                {
+                    foreach (var character in _currentSession.Groups[0].Members)
+                    {
+                        AllCharacters.Add(character);
+                    }
+                }
             }
         }
 
         public void GenerateRandomName()
         {
-            string[] firstNames = { "Арагорн", "Гимли", "Леголас", "Фродо", "Гэндальф" };
-            string[] lastNames = { "Смелый", "Мудрый", "Железная Стопа", "Странник" };
+            GeneratedName = _nameGenerator.Generate();
+        }
 
-            string newName = $"{firstNames[Random.Shared.Next(firstNames.Length)]} {lastNames[Random.Shared.Next(lastNames.Length)]}";
+        private void AddWeapon(Character? character)
+        {
+            if (character == null) return;
+            character.Inventory.Items.Add(new Weapon
+            {
+                Name = "Короткий меч",
+                Description = "Стандартное оружие ближнего боя.",
+                Damage = 6,
+                DamageType = "Piercing",
+                WeaponType = "Sword",
+                Weight = 3.0,
+                IsMagical = false,
+                MagicalBonus = 0
+            });
+            RefreshView();
+        }
 
-            GeneratedName = newName;
+        private void AddArmor(Character? character)
+        {
+            if (character == null) return;
+            character.Inventory.Items.Add(new Armor
+            {
+                Name = "Кольчуга",
+                Description = "Легкая броня для защиты тела.",
+                ArmorClass = 13,
+                ArmorType = "Medium",
+                Weight = 10.0,
+                IsMagical = false,
+                MagicalBonus = 0
+            });
+            RefreshView();
+        }
+
+        private void AddArtifact(Character? character)
+        {
+            if (character == null) return;
+            character.Inventory.Items.Add(new Artifact
+            {
+                Name = "Осколок звезды",
+                Description = "Таинственный артефакт, излучающий легкое свечение.",
+                Power = "Светит в темноте и защищает от зла",
+                Rarity = 4,
+                Weight = 1.0
+            });
+            RefreshView();
+        }
+
+        private void AddTrinket(Character? character)
+        {
+            if (character == null) return;
+            character.Inventory.Items.Add(new Trinket
+            {
+                Name = "Серебряная подвеска",
+                Description = "Крошечный талисман с магическим символом.",
+                Effect = "Улучшает удачу при бросках на проверку",
+                Rarity = "uncommon",
+                Weight = 0.2
+            });
+            RefreshView();
+        }
+
+        private void RefreshView()
+        {
+            FilteredCharacters.Refresh();
+        }
+
+        private void RemoveCharacter(Character? character)
+        {
+            if (character == null) return;
+
+            var result = MessageBox.Show(
+                $"Вы действительно хотите удалить персонажа \"{character.ChName}\"?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                AllCharacters.Remove(character);
+                RefreshView();
+            }
+        }
+
+        private void EditItem(Item? item)
+        {
+            if (item == null) return;
+
+            var editorWindow = new ItemEditorWindow(item)
+            {
+                Owner = Application.Current.MainWindow
+            };
+
+            if (editorWindow.ShowDialog() == true)
+            {
+                var viewModel = editorWindow.DataContext as ItemEditorViewModel;
+                viewModel?.SaveChanges();
+                RefreshView();
+            }
         }
 
         public void SaveToFile()
         {
-            FileService.Save(AllCharacters);
+            var saveFileDialog = new SaveFileDialog
+            {
+                Title = "Выберите место для сохранения",
+                Filter = "JSON файлы (*.json)|*.json|Все файлы (*.*)|*.*",
+                DefaultExt = ".json",
+                FileName = $"DnD_Session_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.json",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                // Ensure we have a default group for characters
+                if (_currentSession.Groups.Count == 0)
+                {
+                    _currentSession.Groups.Add(new PlayerGroup { Name = "Main Party" });
+                }
+
+                _currentSession.Groups[0].Members.Clear();
+                foreach (var character in AllCharacters)
+                {
+                    _currentSession.Groups[0].Members.Add(character);
+                }
+
+                FileService.Save(_currentSession, saveFileDialog.FileName);
+
+                MessageBox.Show(
+                    $"Сессия успешно сохранена в файл:\n{saveFileDialog.FileName}",
+                    "Дневник Мастера",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
         }
     }
 }                                                  
