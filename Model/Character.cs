@@ -1,3 +1,5 @@
+using DndAssistant.Model;
+
 namespace DndAssistant;
 
 public class Character
@@ -5,12 +7,12 @@ public class Character
     public string ChName { get; set; } = string.Empty;
     public string ChRace { get; set; } = string.Empty;
     public string ChDescription { get; set; } = string.Empty;
-    public string ChLocation { get; set; } = string.Empty;
-    public string ChInventory { get; set; } = string.Empty;
+    public Inventory Inventory { get; set; } = new();
+    public Location Location { get; set; } = new();
 
     public override string ToString()
     {
-        return $"{ChName}|{ChRace}|{ChLocation}|{ChDescription}|{ChInventory}";
+        return $"{ChName}|{ChRace}|{Location.Name}|{ChDescription}|{Inventory.Gold}";
     }
 }
 
